@@ -1,5 +1,7 @@
 ==Minio Demo
 
+We want to be able to authenticate and authorize s3 client connections over a mTLS connection. To do so we will need to install nginx, minio and run some java tests to verify that the system is working.
+
 ===Installation
 
 Install MinIO: https://docs.min.io/docs/minio-quickstart-guide.html
@@ -26,3 +28,8 @@ After installing and starting MinIO and NginX Please verify that mTLS is working
 
 After the client and server TLS handshake you should see: `SSL connection using TLSv1.2`
 
+run tests:
+
+mvn test
+
+Passing all the tests means you have tested the system end-to-end
