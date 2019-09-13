@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "HealthTreatment encryption schema",
+  "description": "Example for a JSON Schema that is used to encrypt and object or a String.",
+  "required": [
+    "piiref",
+    "name",
+    "drug"
+  ],
+  "properties": {
+    "piiref": {
+      "type": "string",
+      "contentMediaType": "text/html"
+    },
+    "drug": {
+      "type": "string",
+      "contentMediaType": "text/html"
+    },
+    "name": {
+      "type": "string",
+      "contentEncoding": "application/octet-stream",
+      "contentMediaType": "aes256gcm"
+    }
+  }
+}

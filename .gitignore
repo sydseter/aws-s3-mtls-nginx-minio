@@ -1,2 +1,6 @@
 .DS_Store
 */**/.DS_Store
+.idea/
+eik-minio-demo.iml
+minio-demo.iml
+target
