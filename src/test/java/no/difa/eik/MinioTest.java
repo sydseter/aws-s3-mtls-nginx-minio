@@ -3,6 +3,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import com.amazonaws.ApacheHttpClientConfig;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -11,6 +12,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
@@ -46,6 +48,7 @@ import org.apache.http.ssl.SSLContexts;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.ResourceUtils;
 
 public class MinioTest {
@@ -58,24 +61,53 @@ public class MinioTest {
 
   @Before
   public void setUp() {
+
+  }
+
+  @Test
+  @Order(2)
+  public void testputFileFromBucket() throws Exception {
     AWSCredentials credentials = new BasicAWSCredentials("6AZSGIU7HD0OY9ZI1TCD", "46BCItoMHFxto7lYMrz3HkjnQiEh9MTwZ+qfmBod");
     ClientConfiguration clientConfiguration = new ClientConfiguration();
     clientConfiguration.setSignerOverride("AWSS3V4SignerType");
+    String CERT_ALIAS = "sysco", CERT_PASSWORD = "server";
+    KeyStore identityKeyStore = KeyStore.getInstance("jks");
+    FileInputStream identityKeyStoreFile = new FileInputStream(new File("certs/identity.jks"));
+    identityKeyStore.load(identityKeyStoreFile, "client".toCharArray());
+
+    KeyStore trustKeyStore = KeyStore.getInstance("jks");
+    FileInputStream trustKeyStoreFile = new FileInputStream(new File("certs/truststore.jks"));
+    trustKeyStore.load(trustKeyStoreFile, "server".toCharArray());
+
+    SSLContext sslContext = SSLContexts.custom()
+        // load identity keystore
+        .loadKeyMaterial(identityKeyStore, "client".toCharArray(), new PrivateKeyStrategy() {
+          @Override
+          public String chooseAlias(Map<String, PrivateKeyDetails> aliases, Socket socket) {
+            return "capgemini";
+          }
+        })
+        // load trust keystore
+        .loadTrustMaterial(trustKeyStore, null)
+        .build();
+
+
+
+    SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext,
+        new String[]{"TLSv1.2", "TLSv1.1"},
+        null,
+        NoopHostnameVerifier.INSTANCE);
+    clientConfiguration.getApacheHttpClientConfig().withSslSocketFactory(sslConnectionSocketFactory);
 
     s3Client = AmazonS3ClientBuilder
         .standard()
         .withEndpointConfiguration(
-            new AwsClientBuilder.EndpointConfiguration("http://localhost:9000",
+            new AwsClientBuilder.EndpointConfiguration("https://localhost:8092",
                 Regions.US_EAST_1.name()))
         .withPathStyleAccessEnabled(true)
         .withClientConfiguration(clientConfiguration)
         .withCredentials(new AWSStaticCredentialsProvider(credentials))
         .build();
-  }
-
-  @Test
-  public void testputFileFromBucket() throws FileNotFoundException {
-
 
     try {
       System.out.println("Uploading a new object to S3 from a file\n");
@@ -94,6 +126,7 @@ public class MinioTest {
   }
 
   @Test
+  @Order(1)
   public void testMtlsConnection () throws Exception {
     String CERT_ALIAS = "sysco", CERT_PASSWORD = "server";
     KeyStore identityKeyStore = KeyStore.getInstance("jks");
@@ -115,6 +148,8 @@ public class MinioTest {
         // load trust keystore
         .loadTrustMaterial(trustKeyStore, null)
         .build();
+
+
 
     SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext,
         new String[]{"TLSv1.2", "TLSv1.1"},
@@ -168,8 +203,51 @@ public class MinioTest {
   }
 
   @Test
-  public void testGetFileFromBucket () throws IOException {
+  @Order(3)
+  public void testGetFileFromBucket () throws Exception {
+
     try {
+      AWSCredentials credentials = new BasicAWSCredentials("6AZSGIU7HD0OY9ZI1TCD", "46BCItoMHFxto7lYMrz3HkjnQiEh9MTwZ+qfmBod");
+      ClientConfiguration clientConfiguration = new ClientConfiguration();
+      clientConfiguration.setSignerOverride("AWSS3V4SignerType");
+      String CERT_ALIAS = "sysco", CERT_PASSWORD = "server";
+      KeyStore identityKeyStore = KeyStore.getInstance("jks");
+      FileInputStream identityKeyStoreFile = new FileInputStream(new File("certs/identity.jks"));
+      identityKeyStore.load(identityKeyStoreFile, "client".toCharArray());
+
+      KeyStore trustKeyStore = KeyStore.getInstance("jks");
+      FileInputStream trustKeyStoreFile = new FileInputStream(new File("certs/truststore.jks"));
+      trustKeyStore.load(trustKeyStoreFile, "server".toCharArray());
+
+      SSLContext sslContext = SSLContexts.custom()
+          // load identity keystore
+          .loadKeyMaterial(identityKeyStore, "client".toCharArray(), new PrivateKeyStrategy() {
+            @Override
+            public String chooseAlias(Map<String, PrivateKeyDetails> aliases, Socket socket) {
+              return "capgemini";
+            }
+          })
+          // load trust keystore
+          .loadTrustMaterial(trustKeyStore, null)
+          .build();
+
+
+
+      SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext,
+          new String[]{"TLSv1.2", "TLSv1.1"},
+          null,
+          NoopHostnameVerifier.INSTANCE);
+      clientConfiguration.getApacheHttpClientConfig().withSslSocketFactory(sslConnectionSocketFactory);
+
+      s3Client = AmazonS3ClientBuilder
+          .standard()
+          .withEndpointConfiguration(
+              new AwsClientBuilder.EndpointConfiguration("https://localhost:8092",
+                  Regions.US_EAST_1.name()))
+          .withPathStyleAccessEnabled(true)
+          .withClientConfiguration(clientConfiguration)
+          .withCredentials(new AWSStaticCredentialsProvider(credentials))
+          .build();
       GetObjectRequest rangeObjectRequest = new GetObjectRequest(bucketName, keyName);
       S3Object objectPortion = s3Client.getObject(rangeObjectRequest);
       System.out.println("Printing bytes retrieved:");
@@ -177,6 +255,14 @@ public class MinioTest {
       assertEquals("passed testGetFileFromBucket", true, true);
 
     } catch (Exception e) {
+      if (e instanceof AmazonS3Exception) {
+        Map details = ((AmazonS3Exception) e).getAdditionalDetails();
+        String response = ((AmazonS3Exception) e).getRawResponseContent();
+        Map headers = ((AmazonS3Exception) e).getHttpHeaders();
+        System.out.println(details);
+        System.out.println(response);
+        System.out.println(headers);
+      }
       throw e;
     }
 
