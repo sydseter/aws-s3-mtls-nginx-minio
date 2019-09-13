@@ -1,4 +1,4 @@
-## Minio Demo
+## Minio S3 mTLS Nginx Demo using the AWS S3 SDK
 
 We want to be able to authenticate and authorize s3 client connections over a mTLS connection. To do so we will need to install nginx, minio and run some java tests to verify that the system is working.
 
