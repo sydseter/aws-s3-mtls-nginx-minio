@@ -1,6 +1,8 @@
-==Minio Demo
+##Minio Demo
 
 We want to be able to authenticate and authorize s3 client connections over a mTLS connection. To do so we will need to install nginx, minio and run some java tests to verify that the system is working.
+
+Warning: Please do not use this code or certificates in production as the code is  inherently insecure and only is meant for demonstrational purpouses. The reason for this is that the Java client application not is setup to verify that is is in fact talking to the correct host. To do this properly you should authorize the host with a implementation of the [javax.net.ssl.HostnameVerifier](https://www.programcreek.com/java-api-examples/?class=javax.net.ssl.HostnameVerifier&method=verify) and use the HostnameVerifier to initialize the SSLContext.
 
 ===Installation
 
@@ -33,3 +35,5 @@ run tests:
 mvn test
 
 Passing all the tests means you have tested the system end-to-end
+
+You should be able to reach Minio S3 by opening https://localhost:8092, but you will need to install the [client.p12](certs/client.p12) certificate in order to be allow to access the Minio browser.
