@@ -1,9 +1,6 @@
 package no.difa.eik;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
-import com.amazonaws.ApacheHttpClientConfig;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -19,7 +16,6 @@ import com.amazonaws.services.s3.model.S3Object;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,7 +23,6 @@ import java.net.Socket;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import javax.net.ssl.SSLContext;
 import org.apache.http.HttpResponse;
@@ -67,10 +62,9 @@ public class MinioTest {
   @Test
   @Order(2)
   public void testputFileFromBucket() throws Exception {
-    AWSCredentials credentials = new BasicAWSCredentials("6AZSGIU7HD0OY9ZI1TCD", "46BCItoMHFxto7lYMrz3HkjnQiEh9MTwZ+qfmBod");
+    AWSCredentials credentials = new BasicAWSCredentials(System.getenv("ACCESSKEY"), System.getenv("SECRETKEY"));
     ClientConfiguration clientConfiguration = new ClientConfiguration();
     clientConfiguration.setSignerOverride("AWSS3V4SignerType");
-    String CERT_ALIAS = "sysco", CERT_PASSWORD = "server";
     KeyStore identityKeyStore = KeyStore.getInstance("jks");
     FileInputStream identityKeyStoreFile = new FileInputStream(new File("certs/identity.jks"));
     identityKeyStore.load(identityKeyStoreFile, "client".toCharArray());
@@ -128,7 +122,6 @@ public class MinioTest {
   @Test
   @Order(1)
   public void testMtlsConnection () throws Exception {
-    String CERT_ALIAS = "sysco", CERT_PASSWORD = "server";
     KeyStore identityKeyStore = KeyStore.getInstance("jks");
     FileInputStream identityKeyStoreFile = new FileInputStream(new File("certs/identity.jks"));
     identityKeyStore.load(identityKeyStoreFile, "client".toCharArray());
@@ -207,10 +200,9 @@ public class MinioTest {
   public void testGetFileFromBucket () throws Exception {
 
     try {
-      AWSCredentials credentials = new BasicAWSCredentials("6AZSGIU7HD0OY9ZI1TCD", "46BCItoMHFxto7lYMrz3HkjnQiEh9MTwZ+qfmBod");
+      AWSCredentials credentials = new BasicAWSCredentials(System.getenv("ACCESSKEY"), System.getenv("SECRETKEY"));
       ClientConfiguration clientConfiguration = new ClientConfiguration();
       clientConfiguration.setSignerOverride("AWSS3V4SignerType");
-      String CERT_ALIAS = "sysco", CERT_PASSWORD = "server";
       KeyStore identityKeyStore = KeyStore.getInstance("jks");
       FileInputStream identityKeyStoreFile = new FileInputStream(new File("certs/identity.jks"));
       identityKeyStore.load(identityKeyStoreFile, "client".toCharArray());
