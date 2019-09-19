@@ -3,7 +3,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>no.difa.eik</groupId>
+  <groupId>no.sydseter</groupId>
   <artifactId>eik-minio-demo</artifactId>
   <version>${revision}${sha1}${changelist}</version>
   <packaging>jar</packaging>
@@ -17,12 +17,7 @@
     </developerConnection>
   </scm>
 
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.5.21.RELEASE</version>
-    <relativePath/> <!-- lookup parent from repository -->
-  </parent>
+
 
   <properties>
     <revision>1.0.0</revision>
@@ -31,10 +26,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
     <sha1 />
-    <javax-validation.version>2.0.1.Final</javax-validation.version>
-    <json.version>20180130</json.version>
-    <mbknor.jackson.jsonschema.version>1.0.29</mbknor.jackson.jsonschema.version>
-    <everit.json.schema.version>1.5.1</everit.json.schema.version>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <aws.sdk.version>1.11.106</aws.sdk.version>
     <maven-replacer-plugin.version>1.5.3</maven-replacer-plugin.version>
@@ -58,138 +50,57 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>${json.version}</version>
+      <version>20190722</version>
     </dependency>
     <dependency>
-      <groupId>org.everit.json</groupId>
-      <artifactId>org.everit.json.schema</artifactId>
-      <version>${everit.json.schema.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.google.guava</groupId>
-          <artifactId>guava</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.json</groupId>
-          <artifactId>json</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.1</version>
+      <scope>test</scope>
     </dependency>
-
-    <!-- Swagger -->
     <dependency>
-      <groupId>io.springfox</groupId>
-      <artifactId>springfox-swagger2</artifactId>
-      <version>2.7.0</version>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.2</version>
     </dependency>
-
-    <dependency>
-      <groupId>io.springfox</groupId>
-      <artifactId>springfox-swagger-ui</artifactId>
-      <version>2.7.0</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-configuration-processor</artifactId>
-    </dependency>
-
-    <dependency>
+   <!-- <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.0</version>
+      <version>4.0</version>
+    </dependency>-->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <version>4.0.2.RELEASE</version>
+      <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-    </dependency>
-
-    <!-- Developer tools  -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-devtools</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-
-    <!-- Test -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- Lombok -->
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>${lombok.version}</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <!-- https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4 -->
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
-      <version>2.0.0</version>
-      <scope>test</scope>
-    </dependency>
-
-    <!--https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito2 ;-->
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito2</artifactId>
-      <version>2.0.0</version>
-      <scope>test</scope>
+      <version>2.9.9.3</version>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
-      <!-- Spring Boot maven plugin -->
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
       <!-- Overwrite maven surefire plugin version -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven-surefire-plugin.version}</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
           <includes>
             <include>**/*Tests.java</include>
             <include>**/*Test.java</include>
           </includes>
         </configuration>
       </plugin>
-      <!-- JaCoCo configuration -->
-
-      <!-- Spring Cloud Contracts -->
-      <!-- Replacer plugin, used for release tag -->
       <plugin>
-        <groupId>com.google.code.maven-replacer-plugin</groupId>
-        <artifactId>replacer</artifactId>
-        <version>${maven-replacer-plugin.version}</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <file>pom.xml</file>
-          <replacements>
-            <replacement>
-              <token>${revision}</token>
-              <value>${replacer.revision}</value>
-            </replacement>
-            <replacement>
-              <token>${changelist}</token>
-              <value>${replacer.changelist}</value>
-            </replacement>
-          </replacements>
+          <source>6</source>
+          <target>6</target>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>pl.project13.maven</groupId>
-        <artifactId>git-commit-id-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

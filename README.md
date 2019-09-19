@@ -36,7 +36,9 @@ After the client and server TLS handshake you should see: `SSL connection using 
 
 run tests:
 ##### Please use the Accesskey and Secretkey from Minio
-mvn test -DSECRETKEY='46BCItoMHFxto7lYMrz3HkjnQiEh9MTwZ+qfmBod' -DACCESSKEY='6AZSGIU7HD0OY9ZI1TCD'
+export SECRETKEY='46BCItoMHFxto7lYMrz3HkjnQiEh9MTwZ+qfmBod'
+export ACCESSKEY='6AZSGIU7HD0OY9ZI1TCD'
+mvn test
 
 Passing all the tests means you have tested the system end-to-end
 

@@ -1,4 +1,4 @@
-package no.difa.eik;
+package no.sydseter;
 import static org.junit.Assert.assertEquals;
 
 import com.amazonaws.ClientConfiguration;
