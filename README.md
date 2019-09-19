@@ -40,4 +40,6 @@ mvn test -DSECRETKEY='46BCItoMHFxto7lYMrz3HkjnQiEh9MTwZ+qfmBod' -DACCESSKEY='6AZ
 
 Passing all the tests means you have tested the system end-to-end
 
-You should be able to reach Minio S3 by opening https://localhost:8092, but you will need to install the [client.p12](certs/client.p12) certificate in order to be allow to access the Minio browser.
+You should be able to reach Minio S3 by opening https://localhost:8092, 
+but you will need to install the [client.p12](certs/client.p12) certificate 
+on your Mac/PC and explicitly tell your Mac/PC to trust the certificate in order to access the Minio browser.
