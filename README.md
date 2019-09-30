@@ -32,12 +32,20 @@ After installing and starting MinIO and NginX Please verify that mTLS is working
 
 After the client and server TLS handshake you should see: `SSL connection using TLSv1.2`
 
+### Setup a bucket called test
+
+Configure and install mc: https://docs.min.io/docs/minio-client-complete-guide
+
+mc config host add <ALIAS> http://127.0.0.1:9000 <YOUR-ACCESS-KEY> <YOUR-SECRET-KEY>
+
+mc mb test
+
 ### Run the tests to verify that it is working
 
 run tests:
 ##### Please use the Accesskey and Secretkey from Minio
-export SECRETKEY='46BCItoMHFxto7lYMrz3HkjnQiEh9MTwZ+qfmBod'
-export ACCESSKEY='6AZSGIU7HD0OY9ZI1TCD'
+export SECRETKEY=<YOUR-SECRET-KEY>
+export ACCESSKEY=<YOUR-ACCESS-KEY>
 mvn test
 
 Passing all the tests means you have tested the system end-to-end
