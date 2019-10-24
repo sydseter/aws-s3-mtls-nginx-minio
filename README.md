@@ -46,7 +46,7 @@ run tests:
 ##### Please use the Accesskey and Secretkey from Minio
 export SECRETKEY=<YOUR-SECRET-KEY>
 export ACCESSKEY=<YOUR-ACCESS-KEY>
-mvn test
+mvn test -Dtest=MinioTest
 
 Passing all the tests means you have tested the system end-to-end
 
