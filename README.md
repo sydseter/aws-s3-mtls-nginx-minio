@@ -32,6 +32,52 @@ After installing and starting MinIO and NginX Please verify that mTLS is working
 
 After the client and server TLS handshake you should see: `SSL connection using TLSv1.2`
 
+### Setup HashiCorp Vault as a KMS
+
+This is needed if you want to run the examples using SSEC using an external KMS like HashiCorp Vault.
+
+1. Follow this setup guide: https://docs.min.io/docs/minio-kms-quickstart-guide.html
+
+But the Minio KMS Environment variables might not work with the latest version of Minio so do like this:
+
+export MINIO_SSE_VAULT_APPROLE_ID=53b11d5a-2e90-2b31-d592-f12fc164913d
+export MINIO_SSE_VAULT_APPROLE_SECRET=537d1314-fade-1e16-c6d5-091e8cb11136
+export MINIO_SSE_VAULT_ENDPOINT=http://127.0.0.1:8200
+export MINIO_SSE_VAULT_AUTH_TYPE=approle
+export MINIO_SSE_VAULT_KEY_NAME=my-minio-key
+export MINIO_SSE_AUTO_ENCRYPTION=on
+
+Add your minio public.cert to certs/truststore.jks
+
+    keytool -import -alias minio -file ~/.minio/certs/public.crt -storetype JKS -keystore certs/truststore.jks
+    # password: server
+
+2. Install and setup AWS-CLI with Minio: https://docs.min.io/docs/aws-cli-with-minio.html
+
+3. Test that Vault and Minio is correctly setup:
+
+        cd src/test/resources
+
+        aws s3api put-object \
+         --no-verify-ssl \
+         --endpoint-url https://localhost:9000 \
+         --bucket test  --key healthTreatment.json \
+         --sse-customer-algorithm AES256 \
+         --sse-customer-key MzJieXRlc2xvbmdzZWNyZXRrZXltdXN0cHJvdmlkZWQ= \
+         --sse-customer-key-md5 7PpPLAK26ONlVUGOWlusfg== \
+         --body ./healthTreatment.json
+
+        aws s3api get-object \
+         --no-verify-ssl \
+         --endpoint-url https://localhost:9000 \
+         --bucket test  --key healthTreatment.json \
+         --sse-customer-algorithm AES256 \
+         --sse-customer-key MzJieXRlc2xvbmdzZWNyZXRrZXltdXN0cHJvdmlkZWQ= \
+         --sse-customer-key-md5 7PpPLAK26ONlVUGOWlusfg== \
+         ./healthTreatment1.json
+
+If everything succeed, you should have a ./healthTreatment1.json in the resource directory.
+
 ### Setup a bucket called test
 
 Configure and install mc: https://docs.min.io/docs/minio-client-complete-guide
@@ -44,9 +90,14 @@ mc mb test
 
 run tests:
 ##### Please use the Accesskey and Secretkey from Minio
-export SECRETKEY=<YOUR-SECRET-KEY>
-export ACCESSKEY=<YOUR-ACCESS-KEY>
-mvn test -Dtest=MinioTest
+
+    export SECRETKEY=<YOUR-SECRET-KEY>
+    export ACCESSKEY=<YOUR-ACCESS-KEY>
+
+    mvn test -Dtest=MinioTest
+
+    # or for the SSE-C encryption example
+    mvn test -Dtest=MinioSSECTest
 
 Passing all the tests means you have tested the system end-to-end
 
